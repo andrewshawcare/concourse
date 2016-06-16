@@ -1,7 +1,7 @@
 FROM phusion/baseimage
 
 RUN apt-get -qq update && \
-  DEBIAN_FRONTEND=noninteractive apt-get -yq install curl && \
+  DEBIAN_FRONTEND=noninteractive apt-get -yq install curl iptables && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 

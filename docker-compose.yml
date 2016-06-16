@@ -21,9 +21,9 @@ services:
       --external-url http://localhost:8080
       --postgres-data-source postgres://postgres:postgres@postgres/concourse?sslmode=disable
     volumes:
-      - './session_signing_key:/session_signing_key'
-      - './host_key:/host_key'
-      - './worker_key.pub:/worker_key.pub'
+      - './keys/session_signing_key:/session_signing_key'
+      - './keys/host_key:/host_key'
+      - './keys/worker_key.pub:/worker_key.pub'
   worker:
     build: .
     privileged: true
@@ -35,6 +35,8 @@ services:
       --tsa-host concourse
       --tsa-public-key host_key.pub
       --tsa-worker-private-key worker_key
+      --garden-dns-server 8.8.8.8
+      --garden-dns-server 8.8.4.4
     volumes:
-      - './host_key.pub:/host_key.pub'
-      - './worker_key:/worker_key'
+      - './keys/host_key.pub:/host_key.pub'
+      - './keys/worker_key:/worker_key'
