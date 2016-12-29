@@ -6,7 +6,7 @@ RUN apt-get -qq update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN curl -o /usr/local/bin/concourse -sSL \
-  "https://github.com/concourse/concourse/releases/download/v1.3.0/concourse_linux_amd64" && \
+  "https://github.com/concourse/concourse/releases/download/latest/concourse_linux_amd64" && \
   chmod +x /usr/local/bin/concourse
 
 RUN mkdir -p /var/concourse/worker
