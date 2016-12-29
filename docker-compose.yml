@@ -4,39 +4,30 @@ services:
     image: postgres
     environment:
       - POSTGRES_DB=concourse
-  concourse:
-    build: .
-    ports:
-      - '8080:8080'
-      - '2222:2222'
+      - POSTGRES_USER=concourse
+      - POSTGRES_PASSWORD=concourse
+      - PGDATA=/database
+  web:
+    image: concourse/concourse
+    environment:
+      - CONCOURSE_BASIC_AUTH_USERNAME=concourse
+      - CONCOURSE_BASIC_AUTH_PASSWORD=concourse
+      - CONCOURSE_EXTERNAL_URL=http://localhost:8080
+      - CONCOURSE_POSTGRES_DATA_SOURCE=postgres://concourse:concourse@postgres:5432/concourse?sslmode=disable
     links:
       - postgres
-    command: >
-      web
-      --basic-auth-username admin
-      --basic-auth-password admin
-      --session-signing-key /session_signing_key
-      --tsa-host-key /host_key
-      --tsa-authorized-keys /worker_key.pub
-      --external-url http://localhost:8080
-      --postgres-data-source postgres://postgres:postgres@postgres/concourse?sslmode=disable
     volumes:
-      - './keys/session_signing_key:/session_signing_key'
-      - './keys/host_key:/host_key'
-      - './keys/worker_key.pub:/worker_key.pub'
+      - './keys/web:/concourse-keys'
+    ports:
+      - '8080:8080'
+    command: web
   worker:
-    build: .
+    image: concourse/concourse
     privileged: true
+    environment:
+      - CONCOURSE_TSA_HOST=web
     links:
-      - concourse
-    command: >
-      worker
-      --work-dir /var/concourse/worker
-      --tsa-host concourse
-      --tsa-public-key host_key.pub
-      --tsa-worker-private-key worker_key
-      --garden-dns-server 8.8.8.8
-      --garden-dns-server 8.8.4.4
+      - web
     volumes:
-      - './keys/host_key.pub:/host_key.pub'
-      - './keys/worker_key:/worker_key'
+      - './keys/worker:/concourse-keys'
+    command: worker
