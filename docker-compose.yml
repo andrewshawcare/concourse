@@ -26,6 +26,7 @@ services:
     privileged: true
     environment:
       - CONCOURSE_TSA_HOST=web
+      - CONCOURSE_GARDEN_DNS_SERVER=8.8.8.8
     links:
       - web
     volumes:
